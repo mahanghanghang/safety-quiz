@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>2026年度安全教育培训考核</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f0f2f5;color:#333}
+.header{background:#1a3a5c;color:#fff;padding:18px 24px;text-align:center}
+.header h1{font-size:1.3em}
+.header p{font-size:.85em;margin-top:5px;opacity:.85}
+.container{max-width:800px;margin:24px auto;padding:0 16px 60px}
+.card{background:#fff;border-radius:8px;padding:22px;margin-bottom:18px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.card h2{font-size:.95em;color:#1a3a5c;margin-bottom:14px;border-left:4px solid #1a3a5c;padding-left:10px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-grid label{display:block;font-size:.82em;color:#666;margin-bottom:4px}
+.info-grid input{width:100%;border:1px solid #ddd;border-radius:4px;padding:8px 10px;font-size:.92em}
+.notice{background:#fff7e6;border:1px solid #ffd591;border-radius:6px;padding:11px 15px;margin-bottom:18px;font-size:.85em;color:#874d00}
+.sec-title{background:#1a3a5c;color:#fff;padding:7px 15px;border-radius:6px 6px 0 0;font-size:.88em;margin-top:18px}
+.q-card{background:#fff;padding:16px 18px;border:1px solid #e8e8e8;border-top:none}
+.q-text{font-size:.92em;line-height:1.6;margin-bottom:10px;font-weight:500}
+.opts label{display:flex;align-items:flex-start;gap:8px;padding:5px 7px;border-radius:4px;cursor:pointer;font-size:.88em;line-height:1.5;transition:background .15s}
+.opts label:hover{background:#f0f7ff}
+.opts input{margin-top:3px;flex-shrink:0}
+.submit-area{text-align:center;margin-top:26px}
+.btn{background:#1a3a5c;color:#fff;border:none;padding:12px 44px;font-size:.95em;border-radius:6px;cursor:pointer}
+.btn:hover{background:#0f2540}
+.btn-sm{padding:7px 18px;font-size:.85em}
+.ans-count{text-align:center;color:#666;font-size:.85em;margin-top:10px}
+/* result overlay */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:center;justify-content:center}
+.overlay.show{display:flex}
+.result-box{background:#fff;border-radius:12px;padding:38px;text-align:center;max-width:380px;width:90%}
+.circle{width:110px;height:110px;border-radius:50%;margin:0 auto 18px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:2em;font-weight:bold;color:#fff}
+.pass{background:#52c41a}.fail{background:#ff4d4f}
+/* admin */
+#admin-section{display:none}
+.admin-login{max-width:340px;margin:40px auto;background:#fff;border-radius:8px;padding:30px;box-shadow:0 2px 8px rgba(0,0,0,.1);text-align:center}
+.admin-login h2{margin-bottom:18px;color:#1a3a5c}
+.admin-login input{width:100%;border:1px solid #ddd;border-radius:4px;padding:9px 12px;font-size:.95em;margin-bottom:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px}
+.stat{background:#fff;border-radius:8px;padding:14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.stat .num{font-size:1.8em;font-weight:bold;color:#1a3a5c}
+.stat .lbl{font-size:.78em;color:#888;margin-top:3px}
+table{width:100%;background:#fff;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.07);border-collapse:collapse}
+th{background:#1a3a5c;color:#fff;padding:9px 13px;text-align:left;font-size:.85em}
+td{padding:9px 13px;border-bottom:1px solid #f0f0f0;font-size:.85em}
+.ok{color:#52c41a;font-weight:bold}.no{color:#ff4d4f;font-weight:bold}
+.admin-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.tab-bar{text-align:center;margin:18px 0 0}
+.tab-btn{background:none;border:none;padding:8px 20px;font-size:.9em;cursor:pointer;color:#666;border-bottom:2px solid transparent}
+.tab-btn.active{color:#1a3a5c;border-bottom-color:#1a3a5c;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>中铁工业规划设计研究总院 · 绿碳中心</h1>
+  <p>2026年度安全教育培训考核</p>
+</div>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="showTab('quiz')">答题考核</button>
+  <button class="tab-btn" onclick="showTab('admin')">管理查看</button>
+</div>
+
+<!-- 答题区 -->
+<div id="quiz-section" class="container">
+  <div class="card">
+    <h2>考生信息</h2>
+    <div class="info-grid">
+      <div><label>姓名 *</label><input id="iname" placeholder="请输入姓名"></div>
+      <div><label>部门 *</label><input id="idept" placeholder="请输入部门"></div>
+    </div>
+  </div>
+  <div class="notice">📋 共50道单选题，每题2分，满分100分，80分及格。约20分钟，请独立作答。</div>
+  <div id="quiz-form"></div>
+  <div class="ans-count" id="ans-count">已作答：0 / 50 题</div>
+  <div class="submit-area"><button class="btn" onclick="submitQuiz()">提交答卷</button></div>
+</div>
+
+<!-- 管理区 -->
+<div id="admin-section" class="container">
+  <div id="admin-login-wrap">
+    <div class="admin-login">
+      <h2>管理员登录</h2>
+      <input type="password" id="admin-pwd" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')checkPwd()">
+      <button class="btn" style="width:100%" onclick="checkPwd()">登录</button>
+      <p id="pwd-err" style="color:#ff4d4f;font-size:.85em;margin-top:8px"></p>
+    </div>
+  </div>
+  <div id="admin-content" style="display:none">
+    <div class="stats">
+      <div class="stat"><div class="num" id="s-total">-</div><div class="lbl">参考人数</div></div>
+      <div class="stat"><div class="num" id="s-pass">-</div><div class="lbl">通过人数</div></div>
+      <div class="stat"><div class="num" id="s-rate">-</div><div class="lbl">通过率</div></div>
+      <div class="stat"><div class="num" id="s-avg">-</div><div class="lbl">平均分</div></div>
+    </div>
+    <div class="admin-bar">
+      <span style="font-size:.88em;color:#666" id="last-refresh"></span>
+      <div>
+        <button class="btn btn-sm" onclick="loadAdmin()" style="margin-right:8px">刷新</button>
+        <button class="btn btn-sm" onclick="exportCSV()">导出CSV</button>
+      </div>
+    </div>
+    <table><thead><tr><th>#</th><th>姓名</th><th>部门</th><th>得分</th><th>结果</th><th>提交时间</th></tr></thead>
+    <tbody id="tbody"><tr><td colspan="6" style="text-align:center;padding:24px;color:#999">加载中...</td></tr></tbody></table>
+  </div>
+</div>
+
+<!-- 结果弹窗 -->
+<div class="overlay" id="overlay">
+  <div class="result-box">
+    <div class="circle" id="r-circle"></div>
+    <h2 id="r-title" style="margin-bottom:8px"></h2>
+    <p id="r-detail" style="color:#666;font-size:.9em"></p>
+    <p style="margin-top:14px;color:#aaa;font-size:.8em">结果已自动保存，可关闭页面</p>
+  </div>
+</div>
+
+<script><script>
+const SB='https://ktanqiufkirpwctbtusc.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0YW5xaXVma2lycHdjdGJ0dXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTAzNzMsImV4cCI6MjA5NDk2NjM3M30.LI-Ur9To5zXsqSTSSru6w5flqYnOLrqOhO3nESrJqQY',APWD='admin2026';
+const ANS={1:'B',2:'C',3:'B',4:'B',5:'C',6:'C',7:'B',8:'C',9:'C',10:'B',11:'B',12:'B',13:'C',14:'B',15:'B',16:'B',17:'D',18:'C',19:'B',20:'C',21:'C',22:'B',23:'A',24:'C',25:'B',26:'B',27:'B',28:'B',29:'A',30:'B',31:'B',32:'C',33:'A',34:'C',35:'B',36:'C',37:'B',38:'C',39:'C',40:'D',41:'B',42:'D',43:'C',44:'B',45:'B',46:'D',47:'C',48:'B',49:'C',50:'C'};
+const QS=[
+{s:'【制度与总则】（共6题）',q:'1. 《中铁工业规划设计研究总院安全管理办法》的文件编号是？',o:['A. 研究总院行政管理〔2026〕6号','B. 研究总院项目与流程管理〔2026〕6号','C. 研究总院人力资源管理〔2026〕6号','D. 研究总院综合管理〔2026〕6号']},
+{q:'2. 总院安全管理办法规定，安全生产委员会（安委会）的办公室设在哪个部门？',o:['A. 综合管理部','B. 财务管理部','C. 项目与流程管理部','D. 人力资源管理部']},
+{q:'3. 根据总院安全管理办法，各机构负责人是本机构安全工作的什么？',o:['A. 直接安全责任人','B. 第一责任人','C. 主要责任人','D. 分管责任人']},
+{q:'4. 根据总院安全管理办法第三条，事故处理坚持哪一原则？',o:['A. 三不放过','B. 四不放过','C. 五不放过','D. 六不放过']},
+{q:'5. 大型、新型、危险类实验的实验方案，须经谁签字批准后方可进行？',o:['A. 项目负责人','B. 安委会主任委员','C. 所在机构负责人','D. 项目与流程管理部负责人']},
+{q:'6. 根据安全管理办法，综合管理部负责下列哪项工作？',o:['A. 组织安全教育培训活动','B. 统筹安全生产费用编制与投入管理','C. 安全防护物资的采购、发放及库存管理','D. 建立健全安全管控体系']},
+{s:'【职责与签字】（共3题）',q:'7. 具体实验或测试项目的负责人，在发现不可控风险时，拥有什么权力？',o:['A. 可以申请更换实验场地','B. 可以下令停止作业','C. 可以要求增加人员','D. 可以推迟汇报']},
+{q:'8. 根据总院安全管理办法，安全技术交底的记录要求是？',o:['A. 口头告知即可，无需书面记录','B. 发邮件告知即可','C. 必须保存书面记录，交底人与被交底人均须签字','D. 拍照留存即可']},
+{q:'9. 总院人员在现场测试时，下列哪种作业被明确禁止？',o:['A. 振动监测','B. 载荷试验','C. 吊装、动火等危险作业','D. 原型测试']},
+{s:'【应急处置与事故报告】（共3题）',q:'10. 发生较大生产安全事故，书面事故快报须在多长时间内提交？',o:['A. 1小时内','B. 1.5小时内','C. 3小时内','D. 24小时内']},
+{q:'11. 发生重大及以上生产安全事故，电话报告要求是？',o:['A. 1小时内电话报告','B. 立即电话报告','C. 30分钟内电话报告','D. 2小时内电话报告']},
+{q:'12. 发生死亡或3人以上重伤事故时，事故现场负责人应首先向谁报告？',o:['A. 直接向公司报告','B. 向项目负责人报告','C. 向安委会报告','D. 向当地政府报告']},
+{s:'【安全意识】（共3题）',q:'13. 以下哪种侥幸心理的说法被培训材料列为典型"能力侥幸"？',o:['A. 别人也这么做，大家都没事','B. 就这一次，赶紧完事，不会有问题的','C. 这点事我能处理，不需要多此一举','D. 我做了这么多年，从没出过问题']},
+{q:'14. 以下关于安全责任的描述，正确的是？',o:['A. 安全是安全部门的事，其他人配合即可','B. 安全是人人有责，每位员工既是安全的受益者，也是守护者','C. 安全事故是小概率事件，无需过度关注','D. 只有技术负责人才需要了解安全规定']},
+{q:'15. 安全红线意识要求我们"绝不以什么为由跳过安全程序"？',o:['A. 成本高、效益低','B. 时间紧、任务重','C. 人手少、工期短','D. 资源不足、条件差']},
+{s:'【工地出差安全】（共5题）',q:'16. 根据《工地出差安全告知书》，高风险现场作业的要求是？',o:['A. 单人作业，避免相互干扰','B. 须双人同行，保持通讯畅通，遇险情立即撤离并上报','C. 提前告知领导即可单人前往','D. 携带对讲机后可单人进入']},
+{q:'17. 根据《工地出差安全告知书》，自驾出差时严禁的行为不包括以下哪项？',o:['A. 疲劳驾驶','B. 酒后驾驶','C. 违规操作','D. 超速5%行驶']},
+{q:'18. 《工地出差安全告知书》规定，每年应由哪个部门统一组织员工签订？',o:['A. 综合管理部','B. 人力资源部','C. 项目与流程管理部','D. 财务管理部']},
+{q:'19. 进入工地现场的正确做法是？',o:['A. 熟悉环境后再参加现场安全教育','B. 接受现场安全教育培训，严格遵守现场安全管理规定，正确佩戴防护用品','C. 时间紧时可跳过入场教育，完成任务后再补','D. 持有总院工作证即可直接进入']},
+{q:'20. 前往高原等特殊环境出差前，以下哪类人员被明确禁止前往作业？',o:['A. 有近视的人员','B. 年龄超过45岁的人员','C. 患有高血压、心脏病、哮喘等高原禁忌疾病人员','D. 体重超标的人员']},
+{s:'【办公用电与消防应急】（共5题）',q:'21. 使用灭火器时，喷嘴应对准火焰的哪个位置？',o:['A. 火焰顶部','B. 火焰中部','C. 火焰根部','D. 火焰周围空气']},
+{q:'22. 灭火器使用口诀PASS中，第一步"P"代表什么操作？',o:['A. Press（按下）','B. Pull（拔掉保险销）','C. Push（推动）','D. Point（对准）']},
+{q:'23. 以下关于CO₂灭火器的描述，正确的是？',o:['A. 适用于精密仪器和电气设备，灭火后无残留不损坏设备','B. 适用于所有类型的火灾，是最常见的配置','C. 灭火后会留下粉末残留，需要清洁','D. 不可用于电气设备着火']},
+{q:'24. 火灾发生时，疏散逃生应遵守哪项规定？',o:['A. 可乘坐电梯快速疏散','B. 先取回重要物品再撤离','C. 严禁乘坐电梯，走安全通道，用湿毛巾捂住口鼻','D. 原地等待救援，不要随意移动']},
+{q:'25. 发现电线破损、插头松动等用电异常，正确处理方式是？',o:['A. 用绝缘胶布缠一下继续使用','B. 立即停止使用并上报，等待专业人员处理','C. 减少使用频率，下次采购时更换','D. 只要不短路就可以继续使用']},
+{s:'【危险源辨识与隐患排查】（共4题）',q:'26. 以下关于危险源分类的描述，正确的是？',o:['A. 第一类危险源是人的不安全行为，第二类是物的不安全状态','B. 第一类危险源是客观存在的危险物质或能量，第二类是人的不安全行为、物的不安全状态和管理缺陷','C. 只有化学品才属于危险源','D. 危险源只存在于生产现场，办公室没有危险源']},
+{q:'27. 根据风险分级管控体系，较大风险由谁负责管控？',o:['A. 总院负责人','B. 各机构分管领导','C. 各机构负责人','D. 各机构人员']},
+{q:'28. 发现重大隐患后，正确的处置流程是？',o:['A. 记录在案，等下次检查时一并处理','B. 暂停作业，制定治理方案（不超过10天），验收合格后方可恢复','C. 当场整改，无需上报','D. 3天内完成整改即可继续作业']},
+{q:'29. 一般隐患的整改时限要求是？',o:['A. 当场或3天内整改','B. 7天内整改','C. 10天内整改','D. 30天内整改']},
+{s:'【ESG安全管理体系】（共3题）',q:'30. ESG中，安全管理主要属于哪个维度？',o:['A. E（环境）','B. S（社会）','C. G（治理）','D. 三个维度均等']},
+{q:'31. GRI 403-9主要披露哪类信息？',o:['A. 职业健康安全管理体系认证情况','B. 工伤数据（频率、严重程度、致命事故率）','C. 职业病数据','D. 工人参与职业健康安全的机制']},
+{q:'32. ISO 45001是什么管理体系的国际标准？',o:['A. 环境管理体系','B. 质量管理体系','C. 职业健康安全管理体系','D. 信息安全管理体系']},
+{s:'【实验室安全】（共5题）',q:'33. 使用化学品前，必须查阅的安全文件简称是？',o:['A. SDS/MSDS（化学品安全数据表）','B. ISO标准','C. 操作手册','D. 实验记录表']},
+{q:'34. 实验室废液的正确处置方式是？',o:['A. 倒入下水道，用大量清水冲稀','B. 有机废液与无机废液混合收集，减少桶数','C. 有机废液、无机废液、含重金属废液分类收集，联系有资质单位合规处置','D. 少量废液可以直接蒸发处理']},
+{q:'35. 大型、新型、危险类实验进行时，以下哪项是必须满足的条件？',o:['A. 增加一名观察员在场','B. 项目负责人必须全程在场监督','C. 须有两名以上实验人员操作','D. 须在下班后进行，避免干扰他人']},
+{q:'36. 以下关于化学品储存的做法，正确的是？',o:['A. 将所有化学品集中存放，方便取用','B. 酸与碱可放同一柜子，但需分层','C. 按化学品性质分类储存，不相容物质严禁混存','D. 易燃品与其他化学品存放在一起，贴好标识即可']},
+{q:'37. 化学品溅入眼睛后，第一步正确处置是？',o:['A. 立即去医院就诊','B. 立即用洗眼器或流动清水持续冲洗至少15分钟','C. 用干净纸巾擦拭','D. 用眼药水滴眼']},
+{s:'【职业健康】（共3题）',q:'38. 预防颈椎病最有效的日常办公习惯是？',o:['A. 每天做一次颈椎按摩','B. 使用符合人体工学的椅子','C. 每坐60分钟，强制起身活动5-10分钟','D. 购买颈椎牵引器每天使用']},
+{q:'39. 高温户外作业时，每小时建议补水量是多少？',o:['A. 50-100ml','B. 100-200ml','C. 250-500ml','D. 1000ml以上']},
+{q:'40. 在高原出现以下哪种症状时，需立即下撤就医？',o:['A. 轻微头痛和乏力','B. 食欲轻度减退','C. 初到高原的轻度失眠','D. 剧烈头痛不缓解、胸闷气短、咯血']},
+{s:'【项目全周期安全】（共3题）',q:'41. 项目方案中，安全内容的最低要求是？',o:['A. 注明主要操作步骤即可','B. 必须包含安全风险分析和防控措施，不得仅写技术内容','C. 方案中注明安全负责人姓名即可','D. 技术方案和安全方案可以分开提交']},
+{q:'42. 进行项目调研出发前，以下哪项不属于必要的准备工作？',o:['A. 了解目的地安全环境、气候、交通情况','B. 配备必要安全防护用品','C. 履行出差审批手续','D. 提前预定目的地最高档次的酒店']},
+{q:'43. 发现现场存在重大安全隐患时，项目人员正确的做法是？',o:['A. 继续作业并在工作日志中记录','B. 征得甲方同意后再决定是否停工','C. 有权要求暂停作业，并第一时间向机构负责人报告','D. 等汇报会时向领导提出']},
+{s:'【培训要求与考核】（共2题）',q:'44. 根据总院安全管理办法，各机构部门级安全教育培训的频率要求是？',o:['A. 每季度至少一次','B. 每年至少一次','C. 每两年至少一次','D. 无明确频率要求']},
+{q:'45. 本次培训结束后，工地出差人员需完成哪项后续动作？',o:['A. 提交一篇安全学习心得','B. 完成《工地出差安全告知书》签字确认，交项目与流程管理部备案','C. 参加补充考试','D. 组织一次部门内部安全分享']},
+{s:'【综合应用】（共5题）',q:'46. 以下哪个场景中，项目人员可以不进行安全技术交底直接开始作业？',o:['A. 常规化、技术成熟、经过多次操作的低风险实验，已有标准化操作规程','B. 新型实验方案尚未审批，但项目组人员都很有经验','C. 外协人员熟悉现场，可代替项目负责人主持交底','D. 以上都不正确，所有作业均须安全交底']},
+{q:'47. 小王准备独自前往某隧道施工现场进行技术调研，以下哪项判断是正确的？',o:['A. 只要告知同事目的地，独自前往没有问题','B. 携带手机保持联络即可独自前往','C. 高风险现场须双人同行，小王不应独自前往','D. 白天独自前往高风险现场是允许的']},
+{q:'48. 某实验室发生化学品轻微泄漏，以下处置顺序正确的是？',o:['A. 先拍照记录，再通知负责人，最后处置','B. 疏散人员→通风处理→穿戴防护用品处置或上报→记录并通知安全负责人','C. 立即用抹布擦拭，防止扩散','D. 打开所有窗户通风后正常继续实验']},
+{q:'49. 李明发现办公室消防通道被纸箱堆满，正确的做法是？',o:['A. 这不是自己的职责，不予理会','B. 等清洁人员来时告诉他们','C. 立即要求清理，确保通道畅通，这属于机构负责人职责范围内的日常安全管控','D. 只要消防通道剩余宽度超过60cm就没关系']},
+{q:'50. 张华在工地现场发现一个区域没有明显禁止标志，想进入拍照取证，以下说法正确的是？',o:['A. 没有禁止标志说明可以进入','B. 拍照时间短，快去快回没有危险','C. 须确认该区域已授权，严禁擅自进入非授权区域（如吊装半径内等）','D. 向现场工人打个招呼后可以进入']}
+];
+
+function showTab(t){
+  document.getElementById('quiz-section').style.display=t==='quiz'?'':'none';
+  document.getElementById('admin-section').style.display=t==='admin'?'':'none';
+  document.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',(i===0&&t==='quiz')||(i===1&&t==='admin')));
+  if(t==='admin'&&document.getElementById('admin-content').style.display==='block')loadResults();
+}
+
+function buildQuiz(){
+  let html='',last='';
+  QS.forEach((item,i)=>{
+    if(item.s&&item.s!==last){html+='<div class="sec-title">'+item.s+'</div>';last=item.s;}
+    html+='<div class="q-card"><div class="q-text">'+item.q+'</div><div class="opts">';
+    ['A','B','C','D'].forEach((l,j)=>{html+='<label><input type="radio" name="q'+(i+1)+'" value="'+l+'"> '+item.o[j]+'</label>';});
+    html+='</div></div>';
+  });
+  document.getElementById('quiz-form').innerHTML=html;
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.addEventListener('change',()=>{
+    let c=0;for(let i=1;i<=50;i++)if(document.querySelector('input[name="q'+i+'"]:checked'))c++;
+    document.getElementById('ans-count').textContent='已作答：'+c+' / 50 题';
+  }));
+}
+
+async function submitQuiz(){
+  const name=document.getElementById('iname').value.trim();
+  const dept=document.getElementById('idept').value.trim();
+  if(!name||!dept){alert('请填写姓名和部门');return;}
+  const answers={};let unanswered=[];
+  for(let i=1;i<=50;i++){const s=document.querySelector('input[name="q'+i+'"]:checked');if(s)answers[i]=s.value;else unanswered.push(i);}
+  if(unanswered.length>0&&!confirm('还有'+unanswered.length+'道题未作答，确定提交吗？'))return;
+  let correct=0;
+  for(let i=1;i<=50;i++)if(answers[i]===ANS[i])correct++;
+  const score=correct*2;
+  try{
+    await fetch(SB+'/rest/v1/quiz_results',{method:'POST',headers:{'Content-Type':'application/json','apikey':KEY,'Authorization':'Bearer '+KEY},body:JSON.stringify({name,department:dept,score,answers})});
+  }catch(e){console.error(e);}
+  const circle=document.getElementById('circle');
+  circle.className='circle '+(score>=80?'pass':'fail');
+  circle.innerHTML='<span>'+score+'</span><span style="font-size:.38em;margin-top:3px">分</span>';
+  document.getElementById('res-title').textContent=score>=80?'恭喜，考核通过！':'很遗憾，未通过考核';
+  document.getElementById('res-detail').textContent=name+'，答对'+correct+'题，得'+score+'分（及格线80分）';
+  document.getElementById('res-overlay').classList.add('show');
+}
+
+function checkPwd(){
+  if(document.getElementById('admin-pwd').value===APWD){
+    document.getElementById('admin-login-wrap').style.display='none';
+    document.getElementById('admin-content').style.display='block';
+    loadResults();
+  }else{document.getElementById('pwd-err').textContent='密码错误';}
+}
+
+let allData=[];
+async function loadResults(){
+  try{
+    const r=await fetch(SB+'/rest/v1/quiz_results?select=*&order=submit_time.desc',{headers:{'apikey':KEY,'Authorization':'Bearer '+KEY}});
+    allData=await r.json();
+  }catch(e){document.getElementById('tbody').innerHTML='<tr><td colspan="6" style="text-align:center;color:#f00">加载失败：'+e.message+'</td></tr>';return;}
+  if(!Array.isArray(allData)||!allData.length){document.getElementById('tbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:20px;color:#999">暂无数据</td></tr>';return;}
+  const total=allData.length,passed=allData.filter(d=>d.score>=80).length;
+  const avg=Math.round(allData.reduce((s,d)=>s+d.score,0)/total);
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-pass').textContent=passed;
+  document.getElementById('s-rate').textContent=Math.round(passed/total*100)+'%';
+  document.getElementById('s-avg').textContent=avg;
+  document.getElementById('tbody').innerHTML=allData.map((d,i)=>'<tr><td>'+(i+1)+'</td><td>'+d.name+'</td><td>'+d.department+'</td><td><b>'+d.score+'</b></td><td class="'+(d.score>=80?'ok':'no')+'">'+(d.score>=80?'✓ 通过':'✗ 未通过')+'</td><td>'+new Date(d.submit_time).toLocaleString('zh-CN')+'</td></tr>').join('');
+}
+
+function exportCSV(){
+  if(!allData.length){alert('暂无数据');return;}
+  const rows=allData.map((d,i)=>(i+1)+','+d.name+','+d.department+','+d.score+','+(d.score>=80?'通过':'未通过')+','+new Date(d.submit_time).toLocaleString('zh-CN'));
+  const blob=new Blob(['﻿序号,姓名,部门,得分,是否通过,提交时间\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='考核结果.csv';a.click();
+}
+
+buildQuiz();
+</script>
+</body></html>

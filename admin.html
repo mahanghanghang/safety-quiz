@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>考核结果管理</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Microsoft YaHei",sans-serif;background:#f0f2f5;color:#333}
+.header{background:#1a3a5c;color:white;padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:1.1em}
+.container{max-width:1000px;margin:24px auto;padding:0 16px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.stat-card{background:white;border-radius:8px;padding:16px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.stat-card .num{font-size:2em;font-weight:bold;color:#1a3a5c}
+.stat-card .label{font-size:.82em;color:#888;margin-top:4px}
+table{width:100%;background:white;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.07);border-collapse:collapse}
+th{background:#1a3a5c;color:white;padding:10px 14px;text-align:left;font-size:.88em}
+td{padding:10px 14px;border-bottom:1px solid #f0f0f0;font-size:.88em}
+.pass{color:#52c41a;font-weight:bold}.fail{color:#ff4d4f;font-weight:bold}
+.btn{background:#1a3a5c;color:white;border:none;padding:8px 20px;border-radius:4px;cursor:pointer;font-size:.88em}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>2026年度安全培训考核 · 结果管理</h1>
+  <button class="btn" onclick="exportCSV()">导出 CSV</button>
+</div>
+<div class="container">
+  <div class="stats">
+    <div class="stat-card"><div class="num" id="s-total">-</div><div class="label">参考人数</div></div>
+    <div class="stat-card"><div class="num" id="s-pass">-</div><div class="label">通过人数</div></div>
+    <div class="stat-card"><div class="num" id="s-rate">-</div><div class="label">通过率</div></div>
+    <div class="stat-card"><div class="num" id="s-avg">-</div><div class="label">平均分</div></div>
+  </div>
+  <table><thead><tr><th>#</th><th>姓名</th><th>部门</th><th>得分</th><th>是否通过</th><th>提交时间</th></tr></thead>
+  <tbody id="tbody"><tr><td colspan="6" style="text-align:center;padding:30px;color:#999">加载中...</td></tr></tbody></table>
+</div>
+<script>
+const SB_URL='https://ktanqiufkirpwctbtusc.supabase.co',SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0YW5xaXVma2lycHdjdGJ0dXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkzOTAzNzMsImV4cCI6MjA5NDk2NjM3M30.LI-Ur9To5zXsqSTSSru6w5flqYnOLrqOhO3nESrJqQY';
+let allData=[];
+async function load(){
+  const r=await fetch(\/rest/v1/quiz_results?select=*&order=submit_time.desc,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  });
+  allData=await r.json();
+  if(!allData.length){document.getElementById('tbody').innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:#999">暂无数据</td></tr>';return;}
+  const total=allData.length,passed=allData.filter(d=>d.score>=80).length;
+  const avg=Math.round(allData.reduce((s,d)=>s+d.score,0)/total);
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-pass').textContent=passed;
+  document.getElementById('s-rate').textContent=Math.round(passed/total*100)+'%';
+  document.getElementById('s-avg').textContent=avg;
+  document.getElementById('tbody').innerHTML=allData.map((d,i)=><tr>
+    <td>\</td><td>\</td><td>\</td>
+    <td><b>\</b></td>
+    <td class="\">\</td>
+    <td>\</td>
+  </tr>).join('');
+}
+function exportCSV(){
+  if(!allData.length){alert('暂无数据');return;}
+  const rows=allData.map((d,i)=>\,\,\,\,\,\);
+  const blob=new Blob(['﻿序号,姓名,部门,得分,是否通过,提交时间\n'+rows.join('\n')],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='考核结果.csv';a.click();
+}
+load();
+</script>
+</body>
+</html>
